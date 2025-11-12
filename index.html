@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AIVA Hub</title>
+<style>
+  :root{
+    --bg:#f7f9ff;
+    --panel:#ffffff;
+    --ink:#1b1f33;
+    --muted:#5c668a;
+    --line:#e6ebff;
+    --accent:#6E91D6;
+    --accent2:#FF6D63;
+    --accent3:#00A98E;
+    --gold:#FFC857;
+    --ok:#27ae60;
+    --warn:#f39c12;
+    --danger:#e74c3c;
+    --radius:16px;
+    --shadow: 0 10px 24px rgba(16,25,71,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:
+      radial-gradient(900px 600px at -10% -10%, #eaf2ff 0%, transparent 60%),
+      radial-gradient(900px 600px at 110% 0%, #ffece9 0%, transparent 60%),
+      radial-gradient(900px 600px at 110% 110%, #e7fff8 0%, transparent 60%),
+      var(--bg); color:var(--ink); font:15px/1.45 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+  a{color:#2952ff;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .app{display:grid; grid-template-columns: 300px 1fr; grid-template-rows: auto auto 1fr; gap:16px; padding:16px; height:100vh}
+  /* hero above everything */
+  .hero{grid-column:1 / span 2; background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); height:160px; background-size:cover; background-position:center; background-repeat:no-repeat; display:flex; align-items:center; justify-content:flex-start; padding:12px 16px}
+  .hero .leftcopy{font-weight:800;font-size:18px;color:#1a2456;text-shadow:0 1px 2px rgba(0,0,0,.15)}
+
+  header{grid-column:1 / span 2; background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); display:grid; grid-template-columns: 1fr auto; padding:10px 14px; align-items:center}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand img{height:28px; width:auto; display:block}
+  .nav-and-user{display:grid; grid-template-columns: 1fr 320px; gap:16px; align-items:center}
+  .nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .pill{padding:10px 12px;border-radius:12px;border:1px solid var(--line); background:#f4f7ff; color:#1a2456; cursor:pointer; font-weight:600}
+  .pill.active{background:var(--accent); color:#fff; border-color:transparent}
+  .user-stack{display:flex;flex-direction:column; gap:8px; align-items:flex-end}
+  .userbox{display:flex;gap:10px;align-items:center; background:#f7fbff;border:1px solid var(--line);border-radius:14px;padding:8px 10px}
+  .avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;background:var(--accent)}
+  .searchbox{display:flex;gap:8px;width:100%}
+  .input, .select, textarea{width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--line); background:#fff; color:var(--ink)}
+  .btn{border:none; border-radius:12px; padding:10px 12px; font-weight:700; cursor:pointer; background:var(--accent); color:#fff}
+  .btn.secondary{background:#f4f6ff; color:#1a2456; border:1px solid var(--line)}
+  .btn.small{padding:8px 10px; font-size:12px}
+  .icon-btn{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px;cursor:pointer}
+
+  .left{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px; display:flex; flex-direction:column; gap:12px}
+  .weeks{display:flex;flex-direction:column;gap:8px;overflow:auto}
+  .week-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px;border-radius:12px; background:#f8fbff; border:1px solid var(--line); cursor:pointer}
+  .week-item.active{outline:2px solid var(--accent); background:#eef4ff}
+
+  .right{display:flex; gap:16px; height:100%}
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:12px; height:100%; width:100%; overflow:auto}
+  .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .subtabs{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px}
+  .subtab{padding:6px 10px;border:1px solid var(--line); border-radius:999px; cursor:pointer; background:#f6fbff; font-weight:600}
+  .subtab.active{background:var(--accent3); color:white; border-color:transparent}
+  .card{background:#fbfdff; border:1px solid var(--line); border-radius:14px; padding:8px; margin:6px 0}
+  .card.tight{padding:6px; margin:4px 0}
+  .toolbar button{padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer}
+  .rte{min-height:72px;padding:8px;border-radius:12px;border:1px dashed #d9e2ff;background:#fff}
+  .muted{color:var(--muted); font-size:12px}
+  .reaction{cursor:pointer; padding:2px 6px; border-radius:8px; border:1px solid var(--line); margin-right:4px; display:inline-block; background:#fff}
+  .columns{display:grid; grid-template-columns: repeat(4, 1fr); gap:10px}
+  .status{padding:4px 8px;border-radius:10px;font-size:12px;font-weight:700}
+  .s-ok{background:#e8fff2;color:#0b8a4a;border:1px solid #c7f1d9}
+  .s-in{background:#f1e8ff;color:#5c2aa8;border:1px solid #e1d2ff}
+  .s-rework{background:#ffecec;color:#c0392b;border:1px solid #ffd0d0}
+  .s-ready{background:#e9f0ff;color:#2647b3;border:1px solid #cfdcff}
+  .sticky-footer{position:fixed; right:16px; bottom:16px; display:flex; gap:10px; z-index:20}
+  .modal-backdrop{position:fixed; inset:0; background:rgba(20,30,70,.35); display:none; align-items:center; justify-content:center; z-index:100}
+  .modal{width:min(680px, 92vw); background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:var(--shadow)}
+  .result-item{padding:8px;border-radius:10px;border:1px solid var(--line); background:#fff; cursor:pointer; margin:6px 0}
+  .hidden{display:none !important}
+  .divider{height:1px;background:linear-gradient(90deg, transparent, #e6ebff, transparent); margin:8px 0}
+  .trash{color:var(--danger); cursor:pointer; border:1px solid var(--line); padding:4px 8px; border-radius:8px; background:#fff}
+  .comment{background:#fff; border:1px solid var(--line); border-radius:10px; padding:6px; margin-top:6px}
+  .right-align{margin-left:auto}
+
+  /* Compact agenda rows */
+  .agenda-row{display:grid; grid-template-columns: 20px 1fr auto; gap:8px; align-items:center}
+  .agenda-title{font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .agenda-meta a{font-size:12px}
+
+  /* Ticket layout improvements */
+  .ticket{display:flex; flex-direction:column; gap:8px}
+  .ticket-head{display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:start}
+  .ticket-title{font-weight:700; line-height:1.2; max-width:100%; overflow:hidden; text-overflow:ellipsis}
+  .ticket-controls{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+  .ticket-status{min-width:180px}
+  .ticket-links{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+
+  /* Emoji Picker */
+  .emoji-picker{position:absolute; background:#fff; border:1px solid var(--line); border-radius:12px; padding:8px; box-shadow:var(--shadow); display:grid; grid-template-columns: repeat(8, 1fr); gap:6px; z-index:200}
+  .emoji-picker button{background:#fff;border:1px solid var(--line);border-radius:8px;cursor:pointer;padding:6px}
+
+  @media (max-width: 1100px){
+    .nav-and-user{grid-template-columns:1fr}
+    .user-stack{align-items:flex-start}
+    .app{grid-template-columns:1fr; grid-template-rows: auto auto auto 1fr}
+    .right{flex-direction:column}
+    .columns{grid-template-columns:1fr}
+    .ticket-head{grid-template-columns:1fr}
+    .ticket-controls{justify-content:flex-start}
+    .ticket-status{min-width:160px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- HERO -->
+  <div class="hero" id="hero"><div class="leftcopy">Welcome back 👋</div></div>
+
+  <header>
+    <div class="brand">
+      <img id="brandLogo" alt="AIVA Logo" />
+      <button class="icon-btn" id="changeLogoBtn" title="Change AIVA logo">🪪</button>
+    </div>
+    <div class="nav-and-user">
+      <div class="nav" id="mainNav">
+        <div class="pill active" data-tab="agenda">Agenda</div>
+        <div class="pill" data-tab="reporting">Weekly Reporting</div>
+        <div class="pill" data-tab="g2k">Who Knew?</div>
+        <div style="flex:1"></div>
+        <div class="pill" data-tab="links">Important Links</div>
+        <div class="pill" data-tab="reviews">Reviews/Approvals</div>
+      </div>
+      <div class="user-stack">
+        <div class="userbox">
+          <div class="avatar" id="avatar">?</div>
+          <div>
+            <div id="usernameLabel" style="font-weight:800">User</div>
+            <div class="muted" id="uidLabel">Demo Mode</div>
+          </div>
+          <button class="icon-btn" id="switchUserBtn" title="Switch user">👤</button>
+          <button class="icon-btn" id="changeHeroBtn" title="Change header image">🖼️</button>
+        </div>
+        <div class="searchbox">
+          <input class="input" id="searchInput" placeholder="Search everywhere…" />
+          <button class="btn" id="searchBtn">Search</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <aside class="left">
+    <div class="section-title"><h3 style="margin:0">Weeks</h3><button class="btn small" id="newWeekBtn">+ New Week</button></div>
+    <div class="weeks" id="weeksList"></div>
+  </aside>
+
+  <main class="right">
+    <section class="panel" id="agendaPanel">
+      <div class="section-title"><h3 style="margin:0">Agenda</h3><div class="subtabs" id="agendaTabs"></div></div>
+      <div id="agendaContent"></div>
+    </section>
+
+    <section class="panel hidden" id="reportingPanel">
+      <div class="section-title"><h3 style="margin:0">Weekly Reporting</h3></div>
+      <div id="reportingContent"></div>
+    </section>
+
+    <section class="panel hidden" id="g2kPanel">
+      <div class="section-title"><h3 style="margin:0">Who Knew?</h3></div>
+      <div class="card">
+        <div class="section-title">
+          <div>
+            <div class="muted">This week’s shared question</div>
+            <div id="g2kQuestion" style="font-weight:700; margin-top:4px"></div>
+          </div>
+          <div class="row">
+            <button class="btn small" id="newQBtn">New Question</button>
+            <button class="btn small secondary" id="saveQBtn">Post Question</button>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="col">
+          <div class="toolbar">
+            <button data-cmd="bold">Bold</button>
+            <button data-cmd="italic">Italic</button>
+            <button data-cmd="underline">Underline</button>
+            <button data-cmd="insertUnorderedList">• List</button>
+          </div>
+          <div id="g2kAnswer" class="rte" contenteditable="true" placeholder="Write your answer…"></div>
+          <div><button class="btn small" id="postAnswerBtn">Post Answer</button></div>
+        </div>
+      </div>
+      <div id="g2kThread"></div>
+    </section>
+
+    <section class="panel hidden" id="linksPanel">
+      <div class="section-title">
+        <h3 style="margin:0">Important Links</h3>
+        <div class="subtabs" id="linksTabs"></div>
+        <button class="btn small" id="addLinkBtn">+ Add</button>
+      </div>
+      <div id="linksList"></div>
+    </section>
+
+    <section class="panel hidden" id="reviewsPanel">
+      <div class="section-title"><h3 style="margin:0">Reviews & Approvals</h3><button class="btn small" id="addTicketBtn">+ New Ticket</button></div>
+      <div class="columns">
+        <div><h4>Ready to Review</h4><div id="col-ready"></div></div>
+        <div><h4>In Review</h4><div id="col-in"></div></div>
+        <div><h4>Reviewed / Rework</h4><div id="col-rework"></div></div>
+        <div><h4>Approved</h4><div id="col-ok"></div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="row"><button class="btn small secondary" id="toggleArchiveBtn">Toggle Archive</button></div>
+      <div id="archiveZone" class="hidden"><h4>Archived</h4><div id="col-archived"></div></div>
+    </section>
+  </main>
+
+  <div class="sticky-footer">
+    <button class="icon-btn" id="downloadBtn" title="Download all data">⬇️</button>
+    <label class="icon-btn" title="Upload data">⬆️ <input type="file" id="uploadInput" accept="application/json" style="display:none" /></label>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-backdrop" id="modalBackdrop"><div class="modal" id="genericModal"></div></div>
+<div class="modal-backdrop" id="searchBackdrop"><div class="modal"><h3>Search Results</h3><div id="searchResults"></div><div class="row" style="justify-content:flex-end;margin-top:8px"><button class="btn small secondary" onclick="closeSearch()">Close</button></div></div></div>
+<div class="modal-backdrop" id="userBackdrop"><div class="modal"><h3>Welcome to AIVA Hub</h3><p class="muted">Choose your username to continue. This tags all your adds and edits.</p><div class="row"><input class="input" id="usernameInput" placeholder="e.g. Josh, Kari, Anika, Bri" /><button class="btn" id="setUsernameBtn">Continue</button></div></div></div>
+
+<script type="module">
+const $ = s => document.querySelector(s); const $$ = s => Array.from(document.querySelectorAll(s));
+const fmt = (d)=>{ if(typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)){ const [y,m,day] = d.split('-').map(Number); return new Date(y, m-1, day).toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'}); } return new Date(d).toLocaleDateString(undefined, {year:'numeric', month:'short', day:'numeric'}); };
+const localDateId = (date)=>{ const d = new Date(date); return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); };
+const escapeHtml = (s="") => s.replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]));
+
+const state = { username: localStorage.getItem('aiva_username') || '', color: localStorage.getItem('aiva_color') || ['#6E91D6','#FF6D63','#00A98E','#FFC857','#9B6EF3','#58D6FF'][Math.floor(Math.random()*6)], currentTab:'agenda', currentWeekId:null, agendaSubtab: localStorage.getItem('aiva_agenda_subtab') || 'General', linksSubtab: localStorage.getItem('aiva_links_subtab') || 'General', showArchive:false, g2kQuestion: null };
+
+const DEMO_KEY = 'aiva_demo_db_v3_fixed_r2';
+function demoGet(){ try{ return JSON.parse(localStorage.getItem(DEMO_KEY) || '{}'); }catch{ return {}; } }
+function demoSet(db){ localStorage.setItem(DEMO_KEY, JSON.stringify(db)); }
+function ensureDemoSeed(){ const db = demoGet(); db.users ||= []; db.weeks ||= []; db.agendaItems ||= []; db.reports ||= []; db.g2kQuestions ||= []; db.g2kAnswers ||= []; db.links ||= []; db.tickets ||= []; if(!db.weeks.length){ const todayId = localDateId(new Date()); db.weeks.push({ id: todayId, startDate: todayId, createdBy:'system', createdAt: Date.now() }); } if(!localStorage.getItem('aiva_header_img')){ localStorage.setItem('aiva_header_img', ''); } demoSet(db);} ensureDemoSeed();
+const demo = { list(col, filterFn){ const arr=(demoGet()[col]||[]).filter(filterFn||(()=>true)); return arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)); }, upsert(col, obj){ const db=demoGet(); db[col]=db[col]||[]; if(!obj.id) obj.id=Math.random().toString(36).slice(2,10); if(!obj.createdAt) obj.createdAt=Date.now(); const i=db[col].findIndex(x=>x.id===obj.id); if(i>=0) db[col][i]={...db[col][i], ...obj}; else db[col].push(obj); demoSet(db); return obj.id; }, remove(col, id){ const db=demoGet(); db[col]=(db[col]||[]).filter(x=>x.id!==id); demoSet(db); }, get(col, id){ return (demoGet()[col]||[]).find(x=>x.id===id); } };
+
+// Header + Logo
+(function initHero(){ const url = localStorage.getItem('aiva_header_img'); if(url) document.getElementById('hero').style.backgroundImage = `url('${url}')`; })();
+(function initLogo(){ const logo = localStorage.getItem('aiva_logo_img'); const el = document.getElementById('brandLogo'); if(logo){ el.src = logo; } })();
+
+document.getElementById('changeHeroBtn').onclick = ()=>{ openModal(`<h3>Change Header Image</h3><div class="col"><input type="file" class="input" id="heroFile" accept="image/*"><div class="row right-align" style="margin-top:8px"><button class="btn small secondary" onclick="closeModal()">Cancel</button><button class="btn small" id="heroSave">Save</button></div></div>`); document.getElementById('heroSave').onclick = async ()=>{ const f = document.getElementById('heroFile').files[0]; if(!f) return alert('Choose an image'); const reader = new FileReader(); reader.onload = () => { localStorage.setItem('aiva_header_img', reader.result); document.getElementById('hero').style.backgroundImage = `url('${reader.result}')`; closeModal(); }; reader.readAsDataURL(f); }; };
+
+document.getElementById('changeLogoBtn').onclick = ()=>{ openModal(`<h3>Change AIVA Logo</h3><div class="col"><input type="file" class="input" id="logoFile" accept="image/*"><div class="row right-align" style="margin-top:8px"><button class="btn small secondary" onclick="closeModal()">Cancel</button><button class="btn small" id="logoSave">Save</button></div></div>`); document.getElementById('logoSave').onclick = async ()=>{ const f = document.getElementById('logoFile').files[0]; if(!f) return alert('Choose an image'); const reader = new FileReader(); reader.onload = () => { localStorage.setItem('aiva_logo_img', reader.result); const el=document.getElementById('brandLogo'); el.src = reader.result; closeModal(); }; reader.readAsDataURL(f); }; };
+
+// User
+const avatarEl = document.getElementById('avatar'), usernameLabel=document.getElementById('usernameLabel'), uidLabel=document.getElementById('uidLabel');
+const userBackdrop = document.getElementById('userBackdrop'), usernameInput = document.getElementById('usernameInput');
+document.getElementById('setUsernameBtn').onclick = ()=>{ const name = usernameInput.value.trim(); if(!name) return alert('Please enter a username.'); state.username = name; localStorage.setItem('aiva_username', name); localStorage.setItem('aiva_color', state.color); userBackdrop.style.display='none'; renderUserBadge(); };
+document.getElementById('switchUserBtn').onclick = ()=>{ userBackdrop.style.display='flex'; usernameInput.value = state.username || ''; usernameInput.focus(); };
+function renderUserBadge(){ avatarEl.style.background = state.color; avatarEl.textContent = (state.username||'?').slice(0,1).toUpperCase(); usernameLabel.textContent = state.username || 'User'; uidLabel.textContent = 'Demo Mode'; }
+(function initUser(){ if(!state.username){ userBackdrop.style.display='flex'; usernameInput.value='Josh'; } else renderUserBadge(); })();
+
+// Tabs
+$('#mainNav').addEventListener('click', (e)=>{ const pill=e.target.closest('.pill'); if(!pill) return; $$('.nav .pill').forEach(p=>p.classList.remove('active')); pill.classList.add('active'); state.currentTab=pill.dataset.tab; $$('main .panel').forEach(p=>p.classList.add('hidden')); document.getElementById(state.currentTab+'Panel').classList.remove('hidden'); });
+
+// Weeks
+const weeksList = document.getElementById('weeksList');
+document.getElementById('newWeekBtn').onclick = ()=>{ openModal(`<h3>Create Week</h3><div class="col"><label class="muted">Choose the start date</label><input type="date" class="input" id="weekDate"><div class="row right-align" style="margin-top:8px"><button class="btn small secondary" onclick="closeModal()">Cancel</button><button class="btn small" id="createWeekGo">Create</button></div></div>`); document.getElementById('createWeekGo').onclick = ()=>{ const raw = document.getElementById('weekDate').value; const id = raw ? raw : localDateId(new Date()); demo.upsert('weeks', { id, startDate: id, createdBy: state.username||'system', createdAt: Date.now() }); closeModal(); renderWeeks(); }; };
+function renderWeeks(){ const arr = demo.list('weeks').sort((a,b)=> new Date(b.startDate)-new Date(a.startDate)); if(!state.currentWeekId && arr.length) state.currentWeekId = arr[0].id; weeksList.innerHTML=''; arr.forEach(w=>{ const el=document.createElement('div'); el.className='week-item'+(state.currentWeekId===w.id?' active':''); el.innerHTML = `<div><div style="font-weight:700">${fmt(w.startDate)}</div><div class="muted">${w.id}</div></div><div class="row"><span class="muted" style="font-size:12px">Week</span><button class="trash" data-del="${w.id}">Delete</button></div>`; el.onclick = (e)=>{ if(e.target.dataset.del) return; state.currentWeekId=w.id; renderWeeks(); renderAllMain(); }; el.querySelector('[data-del]').onclick = (e)=>{ e.stopPropagation(); if(confirm('Delete this week?')) demo.remove('weeks', w.id); renderWeeks(); renderAllMain(); }; weeksList.appendChild(el); }); }
+renderWeeks();
+
+// Agenda
+const AGENDA_TABS = ["General","Communicator Awards","w3 Awards","Davey Awards","AIVA"];
+const agendaTabs = document.getElementById('agendaTabs'); const agendaContent = document.getElementById('agendaContent');
+function renderAgendaTabs(){ agendaTabs.innerHTML=''; AGENDA_TABS.forEach(name=>{ const t=document.createElement('div'); t.className='subtab'+(state.agendaSubtab===name?' active':''); t.textContent=name; t.onclick=()=>{ state.agendaSubtab=name; localStorage.setItem('aiva_agenda_subtab', name); renderAgendaTabs(); renderAgenda(); }; agendaTabs.appendChild(t); }); }
+function rteToolbarHTML(id){ return `<div class="toolbar" data-for="${id}"><button data-cmd="bold">Bold</button><button data-cmd="italic">Italic</button><button data-cmd="underline">Underline</button><button data-cmd="insertUnorderedList">• List</button><button data-cmd="createLink">Link</button></div>`; }
+function attachToolbarHandlers(container){ container.querySelectorAll('.toolbar').forEach(tb=>{ tb.onclick=(e)=>{ const btn=e.target.closest('button'); if(!btn) return; const cmd=btn.dataset.cmd; const target=document.getElementById(tb.dataset.for); target&&target.focus(); if(cmd==='createLink'){ const url=prompt('URL:'); if(url) document.execCommand('createLink', false, url); } else document.execCommand(cmd,false,null); }; }); }
+function agendaComposer(){ const id='rte-agenda-'+Math.random().toString(36).slice(2,8); const wrap=document.createElement('div'); wrap.className='card'; wrap.innerHTML = `<div class="row"><input class="input" id="agendaTitle" placeholder="Title" style="flex:2"><input class="input" id="agendaLinks" placeholder="Link(s), comma-separated" style="flex:3"></div>${rteToolbarHTML(id)}<div class="rte" id="${id}" contenteditable="true" placeholder="Description…"></div><div class="row right-align" style="margin-top:8px"><button class="btn small" id="addAgendaBtn">Add Item</button></div>`; setTimeout(()=> attachToolbarHandlers(wrap), 0); wrap.querySelector('#addAgendaBtn').onclick = ()=>{ if(!state.currentWeekId) return alert('Choose a week first.'); const title=(wrap.querySelector('#agendaTitle').value||'').trim(); const html=(wrap.querySelector('.rte').innerHTML||'').trim(); const links=(wrap.querySelector('#agendaLinks').value||'').split(',').map(s=>s.trim()).filter(Boolean); if(!title && !html) return alert('Add a title or description.'); demo.upsert('agendaItems', { weekId: state.currentWeekId, section: state.agendaSubtab, title, html, links, done:false, username: state.username||'User', color: state.color, createdAt: Date.now(), comments:[], reactions:{} }); renderAgenda(); }; return wrap; }
+function groupByUser(items){ const by={}; items.forEach(it=>{ const u=it.username||'Unknown'; (by[u]=by[u]||[]).push(it); }); const preferred=['Josh','Kari','Anika','Bri']; const keys=Object.keys(by).sort((a,b)=>{ const ia=preferred.indexOf(a), ib=preferred.indexOf(b); if(ia!==-1&&ib!==-1) return ia-ib; if(ia!==-1) return -1; if(ib!==-1) return 1; return a.localeCompare(b); }); const res={}; keys.forEach(k=> res[k]=by[k].sort((x,y)=>(y.createdAt||0)-(x.createdAt||0))); return res; }
+function renderAgenda(){ if(!state.currentWeekId){ agendaContent.innerHTML='<div class="muted">Choose or create a week.</div>'; return; } const items = demo.list('agendaItems', it=> it.weekId===state.currentWeekId && it.section===state.agendaSubtab); const byUser = groupByUser(items); agendaContent.innerHTML=''; agendaContent.appendChild(agendaComposer()); Object.entries(byUser).forEach(([user,arr])=>{ const sec=document.createElement('div'); sec.className='user-section'; sec.innerHTML=`<h4>${escapeHtml(user)}</h4>`; arr.forEach(item=>{ const card=document.createElement('div'); card.className='card tight'; card.dataset.id=item.id; card.innerHTML = `<div class="agenda-row"><input type="checkbox" ${item.done?'checked':''} data-check="${item.id}"><div><div class="agenda-title">${escapeHtml(item.title||'(No title)')}</div><div class="muted agenda-meta">${(item.links||[]).map(l=>`<a href="${escapeHtml(l)}" target="_blank">${escapeHtml(l)}</a>`).join(' · ')}</div></div><div class="row"><button class="icon-btn" data-expand="${item.id}">↕︎</button><button class="icon-btn" data-edit="${item.id}">✏️</button><button class="trash" data-del="${item.id}">Delete</button></div></div><div class="divider"></div><div class="content hidden" data-body="${item.id}">${item.html||''}</div><div class="row" style="margin-top:6px"><button class="icon-btn" data-reactbtn="${item.id}">🙂 React</button>${(Object.entries(item.reactions||{}).map(([k,v])=>`<span class='reaction'>${k} ${v}</span>`).join(''))}</div><div class="comment"><input class="input" placeholder="Add a comment…" data-cmt="${item.id}"></div><div class="col" style="margin-top:6px" data-cmtlist="${item.id}">${(item.comments||[]).map(c=>`<div class="comment"><b>${escapeHtml(c.user)}</b>: ${c.text}</div>`).join('')}</div>`; sec.appendChild(card); }); agendaContent.appendChild(sec); }); }
+let agendaBound = false; function bindAgendaHandlers(){ if(agendaBound) return; agendaBound = true; const closePicker = ()=>{ const p=document.getElementById('emojiPicker'); if(p) p.remove(); }; agendaContent.addEventListener('click', (e)=>{ const del=e.target.closest('[data-del]'); if(del){ demo.remove('agendaItems', del.dataset.del); renderAgenda(); return; } const ed=e.target.closest('[data-edit]'); if(ed){ const it=demo.get('agendaItems', ed.dataset.edit); openModal(`<h3>Edit Item</h3><div class="col"><input class="input" id="eTitle" value="${escapeHtml(it.title||'')}" /><input class="input" id="eLinks" value="${(it.links||[]).join(', ')}" />${rteToolbarHTML('eRte')}<div id="eRte" class="rte" contenteditable="true">${it.html||''}</div><div class="row right-align"><button class="btn small secondary" onclick="closeModal()">Cancel</button><button class="btn small" id="eSave">Save</button></div></div>`); attachToolbarHandlers(document.getElementById('genericModal')); document.getElementById('eSave').onclick=()=>{ demo.upsert('agendaItems', { id: it.id, title: document.getElementById('eTitle').value.trim(), links: document.getElementById('eLinks').value.split(',').map(s=>s.trim()).filter(Boolean), html: document.getElementById('eRte').innerHTML }); closeModal(); renderAgenda(); }; return; } const chk = e.target.closest('[data-check]'); if(chk){ demo.upsert('agendaItems', { id: chk.dataset.check, done: chk.checked }); renderAgenda(); return; } const exp=e.target.closest('[data-expand]'); if(exp){ const body=document.querySelector(`[data-body="${exp.dataset.expand}"]`); body && body.classList.toggle('hidden'); return; } const reactBtn = e.target.closest('[data-reactbtn]'); if(reactBtn){ closePicker(); const btn=e.target.closest('button'); const rect=btn.getBoundingClientRect(); const picker=document.createElement('div'); picker.id='emojiPicker'; picker.className='emoji-picker'; const EMOJIS='😀,😃,😄,😁,😆,🥹,😊,🙂,😉,😍,🤩,😘,😜,🤗,🤔,🤙,👏,🙌,🔥,💡,❤️,💯,🚀,✨,👍,🎉,🥳,🧠,🛠️,📌,⚡'.split(','); EMOJIS.forEach(ej=>{ const b=document.createElement('button'); b.textContent=ej; b.onclick=()=>{ const it=demo.get('agendaItems', reactBtn.dataset.reactbtn); const reactions=it.reactions||{}; reactions[ej]=(reactions[ej]||0)+1; demo.upsert('agendaItems', { id: it.id, reactions }); closePicker(); renderAgenda(); }; picker.appendChild(b); }); document.body.appendChild(picker); picker.style.left=(rect.left+window.scrollX)+'px'; picker.style.top=(rect.bottom+window.scrollY+6)+'px'; return; } }); document.addEventListener('click', (e)=>{ if(!e.target.closest('#emojiPicker') && !e.target.closest('[data-reactbtn]')){ const p=document.getElementById('emojiPicker'); if(p) p.remove(); } }); agendaContent.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && e.target.matches('input[data-cmt]')){ const text = (e.target.value||'').trim(); if(!text) return; const id=e.target.dataset.cmt; const it=demo.get('agendaItems', id); const comments=it.comments||[]; comments.push({ user: state.username||'User', text: escapeHtml(text) }); demo.upsert('agendaItems', { id, comments }); e.target.value=''; renderAgenda(); } }); }
+bindAgendaHandlers();
+
+// Reporting
+const reportingContent = document.getElementById('reportingContent');
+function reportingComposer(){ const id='rte-rep-'+Math.random().toString(36).slice(2,8); const wrap=document.createElement('div'); wrap.className='card'; wrap.innerHTML = `<div class="row"><input class="input" id="repTitle" placeholder="Headline or short title"></div>${rteToolbarHTML(id)}<div class="rte" id="${id}" contenteditable="true" placeholder="Details…"></div><div class="row right-align" style="margin-top:8px"><button class="btn small" id="addRepBtn">Add Report</button></div>`; setTimeout(()=> attachToolbarHandlers(wrap), 0); wrap.querySelector('#addRepBtn').onclick=()=>{ if(!state.currentWeekId) return alert('Choose a week first.'); const title=(wrap.querySelector('#repTitle').value||'').trim(); const html=(wrap.querySelector('.rte').innerHTML||'').trim(); if(!title && !html) return alert('Please add content.'); demo.upsert('reports', { weekId: state.currentWeekId, title, html, username: state.username||'User', color: state.color, createdAt: Date.now() }); renderReporting(); }; return wrap; }
+function renderReporting(){ if(!state.currentWeekId){ reportingContent.innerHTML='<div class="muted">Choose or create a week.</div>'; return; } const items=demo.list('reports', it=> it.weekId===state.currentWeekId); const by=groupByUser(items); reportingContent.innerHTML=''; reportingContent.appendChild(reportingComposer()); Object.entries(by).forEach(([user,arr])=>{ const sec=document.createElement('div'); sec.className='user-section'; sec.innerHTML=`<h4>${escapeHtml(user)}</h4>`; arr.forEach(it=>{ const card=document.createElement('div'); card.className='card tight'; card.dataset.id=it.id; card.innerHTML = `<div class="section-title"><div style="font-weight:700">${escapeHtml(it.title||'(No title)')}</div><div class="row"><button class="icon-btn" data-edit="${it.id}">✏️</button><button class="trash" data-del="${it.id}">Delete</button></div></div><div class="content">${it.html||''}</div><div class="muted">By ${escapeHtml(it.username)} • ${fmt(it.createdAt)}</div>`; sec.appendChild(card); }); reportingContent.appendChild(sec); }); reportingContent.onclick=(e)=>{ const del=e.target.closest('[data-del]'); if(del){ demo.remove('reports', del.dataset.del); renderReporting(); return; } const ed=e.target.closest('[data-edit]'); if(ed){ const it=demo.get('reports', ed.dataset.edit); openModal(`<h3>Edit Report</h3><div class="col"><input class="input" id="rt" value="${escapeHtml(it.title||'')}">${rteToolbarHTML('rtr')}<div id="rtr" class="rte" contenteditable="true">${it.html||''}</div><div class="row right-align"><button class="btn small secondary" onclick="closeModal()">Cancel</button><button class="btn small" id="rs">Save</button></div></div>`); attachToolbarHandlers(document.getElementById('genericModal')); document.getElementById('rs').onclick=()=>{ demo.upsert('reports', { id: it.id, title: document.getElementById('rt').value.trim(), html: document.getElementById('rtr').innerHTML }); closeModal(); renderReporting(); }; } };
+}
+
+// Who Knew? (G2K)
+const thread = document.getElementById('g2kThread');
+const BASE_Q=["What’s a small joy you look forward to every day?","What’s a movie you can quote by heart?","What travel spot changed how you see the world?","What’s a ritual that grounds you?","What’s a piece of tech you love a little too much?"]; function randomQ(){ return BASE_Q[Math.floor(Math.random()*BASE_Q.length)]; }
+function renderG2K(){ if(!state.currentWeekId){ thread.innerHTML=''; return; } const qRec=demo.list('g2kQuestions', it=> it.weekId===state.currentWeekId)[0]; const q=qRec?qRec.question:randomQ(); document.getElementById('g2kQuestion').textContent=q; const answers=demo.list('g2kAnswers', it=> it.weekId===state.currentWeekId); thread.innerHTML=''; answers.forEach(a=>{ const card=document.createElement('div'); card.className='card'; card.innerHTML = `<div class="section-title"><div style="font-weight:700">${escapeHtml(a.username||'User')}</div><div class="row"><button class="icon-btn" data-edit="${a.id}">✏️</button><button class="trash" data-del="${a.id}">Delete</button></div></div><div class="content">${a.html||''}</div><div class="divider"></div><div class="comment"><input class="input" placeholder="Add a comment…" data-cmt="${a.id}"></div><div class="col" style="margin-top:6px" data-cmtlist="${a.id}">${(a.comments||[]).map(c=>`<div class="comment"><b>${escapeHtml(c.user)}</b>: ${c.text}</div>`).join('')}</div>`; thread.appendChild(card); }); }
+document.getElementById('newQBtn').onclick = ()=>{ document.getElementById('g2kQuestion').textContent = randomQ(); };
+document.getElementById('saveQBtn').onclick = ()=>{ if(!state.currentWeekId) return alert('Choose a week first.'); const question=document.getElementById('g2kQuestion').textContent||''; const existing=demo.list('g2kQuestions', it=> it.weekId===state.currentWeekId)[0]; if(existing) demo.upsert('g2kQuestions', { id: existing.id, question }); else demo.upsert('g2kQuestions', { weekId: state.currentWeekId, question, createdAt: Date.now() }); alert('Question saved for this week.'); };
+document.getElementById('postAnswerBtn').onclick = ()=>{ if(!state.currentWeekId) return alert('Choose a week first.'); const html=(document.getElementById('g2kAnswer').innerHTML||'').trim(); if(!html) return alert('Write something first.'); demo.upsert('g2kAnswers', { weekId: state.currentWeekId, question: document.getElementById('g2kQuestion').textContent||'', username: state.username||'User', html, createdAt: Date.now(), comments:[], reactions:{} }); document.getElementById('g2kAnswer').innerHTML=''; renderG2K(); };
+let g2kBound=false; function bindG2K(){ if(g2kBound) return; g2kBound=true; thread.addEventListener('click', (e)=>{ const del=e.target.closest('[data-del]'); if(del){ demo.remove('g2kAnswers', del.dataset.del); renderG2K(); return; } const ed=e.target.closest('[data-edit]'); if(ed){ const it=demo.get('g2kAnswers', ed.dataset.edit); openModal(`<h3>Edit Answer</h3><div class="col">${rteToolbarHTML('rtg')}<div id="rtg" class="rte" contenteditable="true">${it.html||''}</div><div class="row right-align"><button class="btn small secondary" onclick="closeModal()">Cancel</button><button class="btn small" id="sav">Save</button></div></div>`); attachToolbarHandlers(document.getElementById('genericModal')); document.getElementById('sav').onclick=()=>{ demo.upsert('g2kAnswers', { id: it.id, html: document.getElementById('rtg').innerHTML }); closeModal(); renderG2K(); }; return; } }); thread.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && e.target.matches('input[data-cmt]')){ const text=(e.target.value||'').trim(); if(!text) return; const id=e.target.dataset.cmt; const it=demo.get('g2kAnswers', id); const comments=it.comments||[]; comments.push({ user: state.username||'User', text: escapeHtml(text) }); demo.upsert('g2kAnswers', { id, comments }); e.target.value=''; renderG2K(); } }); }
+bindG2K();
+
+// Links
+const linksTabs=document.getElementById('linksTabs'); const linksList=document.getElementById('linksList');
+function renderLinksTabs(){ linksTabs.innerHTML=''; AGENDA_TABS.forEach(name=>{ const t=document.createElement('div'); t.className='subtab'+(state.linksSubtab===name?' active':''); t.textContent=name; t.onclick=()=>{ state.linksSubtab=name; localStorage.setItem('aiva_links_subtab', name); renderLinksTabs(); renderLinks(); }; linksTabs.appendChild(t); }); }
+document.getElementById('addLinkBtn').onclick = ()=>{ openModal(`<h3>Add Link</h3><div class="col"><label class="muted">Section</label><select class="select" id="lkSection">${AGENDA_TABS.map(n=>`<option ${n===state.linksSubtab?'selected':''}>${n}</option>`).join('')}</select><input class="input" id="lkTitle" placeholder="Title" /><input class="input" id="lkUrl" placeholder="URL" /><textarea class="input" id="lkDesc" placeholder="Description"></textarea><div class="row right-align"><button class="btn small secondary" onclick="closeModal()">Cancel</button><button class="btn small" id="lkGo">Save</button></div></div>`); document.getElementById('lkGo').onclick=()=>{ demo.upsert('links', { section: document.getElementById('lkSection').value, title: document.getElementById('lkTitle').value.trim(), url: document.getElementById('lkUrl').value.trim(), desc: document.getElementById('lkDesc').value.trim() }); closeModal(); renderLinks(); }; };
+function renderLinks(){ const items=demo.list('links', it=> it.section===state.linksSubtab); linksList.innerHTML = items.map(it=>{ const url = escapeHtml(it.url||''); const label = escapeHtml(it.title||it.url||'(No title)'); const anchor = url ? `<a target="_blank" href="${url}">${label}</a>` : label; const desc = escapeHtml(it.desc||''); return `<div class="card tight"><div class="ticket-title">${anchor}</div>${desc?`<div class=\"muted\">${desc}</div>`:''}</div>`; }).join(''); }
+
+// Tickets
+const reviewsPanel=document.getElementById('reviewsPanel');
+document.getElementById('addTicketBtn').onclick = ()=>{ openModal(`<h3>New Review Ticket</h3><div class="col"><input class="input" id="tName" placeholder="Project name"><textarea class="input" id="tDesc" placeholder="Description"></textarea><input class="input" id="tLinks" placeholder="Link(s), comma-separated"><label class="muted">Approval needed by:</label><input type="date" class="input" id="tDue"><div class="row right-align"><button class="btn small secondary" onclick="closeModal()">Cancel</button><button class="btn small" id="tGo">Create</button></div></div>`); document.getElementById('tGo').onclick = ()=>{ demo.upsert('tickets', { name: $('#tName').value.trim(), desc: $('#tDesc').value.trim(), links: $('#tLinks').value.split(',').map(s=>s.trim()).filter(Boolean), due: $('#tDue').value || null, status:'Ready to review', createdAt: Date.now(), createdBy: state.username||'User', archived:false, reviewer:'Josh', comments:[] }); closeModal(); renderTickets(); }; };
+function statusClass(s){ return s==="Approved"?'s-ok': s==="In Review"?'s-in': s==="Reviewed/Rework"?'s-rework':'s-ready'; }
+function renderTickets(){ const cols = { 'Ready to review': $('#col-ready'), 'In Review': $('#col-in'), 'Reviewed/Rework': $('#col-rework'), 'Approved': $('#col-ok') }; Object.values(cols).forEach(c=> c.innerHTML=''); $('#col-archived').innerHTML=''; demo.list('tickets').forEach(t=>{ const card=document.createElement('div'); card.className='card tight'; card.dataset.id=t.id; const statusControl = (state.username==='Josh') ? `<select class="select ticket-status" data-status="${t.id}"><option ${t.status==='Ready to review'?'selected':''}>Ready to review</option><option ${t.status==='In Review'?'selected':''}>In Review</option><option ${t.status==='Reviewed/Rework'?'selected':''}>Reviewed/Rework</option><option ${t.status==='Approved'?'selected':''}>Approved</option></select>` : `<span class="status ${statusClass(t.status)} ticket-status">${t.status}</span>`; card.innerHTML = `<div class="ticket"><div class="ticket-head"><div class="ticket-title">${escapeHtml(t.name||'(No title)')}</div><div class="ticket-controls">${statusControl}<button class="icon-btn" data-edit="${t.id}">✏️</button><button class="trash" data-arch="${t.id}">${t.archived?'Unarchive':'Archive'}</button><button class="trash" data-del="${t.id}">Delete</button></div></div><div>${escapeHtml(t.desc||'')}</div><div class="muted ticket-links">${(t.links||[]).map(l=>`<a target=\"_blank\" href=\"${escapeHtml(l)}\">${escapeHtml(l)}</a>`).join(' · ')}</div><div class="muted">Due ${escapeHtml(t.due||'n/a')} • Created by ${escapeHtml(t.createdBy||'')}</div><div class="divider"></div><div class="comment"><input class="input" placeholder="Add a comment…" data-cmt="${t.id}"></div><div class="col" style="margin-top:6px" data-cmtlist="${t.id}">${(t.comments||[]).map(c=>`<div class=\"comment\"><b>${escapeHtml(c.user)}</b>: ${c.text}</div>`).join('')}</div></div>`; if(t.archived) $('#col-archived').appendChild(card); else (cols[t.status]||cols['Ready to review']).appendChild(card); }); }
+let ticketsBound=false; function bindTickets(){ if(ticketsBound) return; ticketsBound=true; reviewsPanel.addEventListener('click', (e)=>{ const del=e.target.closest('[data-del]'); if(del){ demo.remove('tickets', del.dataset.del); renderTickets(); return; } const arch=e.target.closest('[data-arch]'); if(arch){ const it=demo.get('tickets', arch.dataset.arch); demo.upsert('tickets', { id: it.id, archived: !it.archived }); renderTickets(); return; } const ed=e.target.closest('[data-edit]'); if(ed){ const t=demo.get('tickets', ed.dataset.edit); openModal(`<h3>Edit Ticket</h3><div class="col"><input class="input" id="tName" value="${escapeHtml(t.name||'')}"><textarea class="input" id="tDesc">${escapeHtml(t.desc||'')}</textarea><input class="input" id="tLinks" value="${(t.links||[]).join(', ')}"><label class="muted">Approval needed by:</label><input type="date" class="input" id="tDue" value="${escapeHtml(t.due||'')}"><div class="row right-align"><button class="btn small secondary" onclick="closeModal()">Cancel</button><button class="btn small" id="tSave">Save</button></div></div>`); document.getElementById('tSave').onclick=()=>{ demo.upsert('tickets', { id: t.id, name: $('#tName').value.trim(), desc: $('#tDesc').value.trim(), links: $('#tLinks').value.split(',').map(s=>s.trim()).filter(Boolean), due: $('#tDue').value || null }); closeModal(); renderTickets(); }; return; } }); reviewsPanel.addEventListener('change', (e)=>{ const sel=e.target.closest('select[data-status]'); if(sel){ demo.upsert('tickets', { id: sel.dataset.status, status: sel.value }); renderTickets(); } }); reviewsPanel.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && e.target.matches('input[data-cmt]')){ const text=(e.target.value||'').trim(); if(!text) return; const id=e.target.dataset.cmt; const it=demo.get('tickets', id); const comments=it.comments||[]; comments.push({ user: state.username||'User', text: escapeHtml(text) }); demo.upsert('tickets', { id, comments }); e.target.value=''; renderTickets(); } }); }
+bindTickets();
+
+// Search + Export/Import + Modal helpers
+$('#searchBtn').onclick = ()=>{ const q=($('#searchInput').value||'').trim().toLowerCase(); if(!q) return; const results=[]; demo.list('agendaItems').forEach(d=>{ const blob=((d.title||'')+' '+(d.html||'')+' '+(d.links||[]).join(' ')).toLowerCase(); if(blob.includes(q)) results.push({ type:'Agenda', label:d.title||'(No title)', weekId:d.weekId, tab:'agenda' }); }); demo.list('reports').forEach(d=>{ const blob=((d.title||'')+' '+(d.html||'')).toLowerCase(); if(blob.includes(q)) results.push({ type:'Reporting', label:d.title||'(No title)', weekId:d.weekId, tab:'reporting' }); }); demo.list('g2kAnswers').forEach(d=>{ const blob=(d.question+' '+(d.html||'')).toLowerCase(); if(blob.includes(q)) results.push({ type:'Who Knew?', label:d.question.slice(0,60), weekId:d.weekId, tab:'g2k' }); }); demo.list('links').forEach(d=>{ const blob=((d.title||'')+' '+(d.url||'')+' '+(d.desc||'')).toLowerCase(); if(blob.includes(q)) results.push({ type:'Link', label:d.title||d.url, weekId:null, tab:'links' }); }); demo.list('tickets').forEach(d=>{ const blob=((d.name||'')+' '+(d.desc||'')+' '+(d.links||[]).join(' ')).toLowerCase(); if(blob.includes(q)) results.push({ type:'Ticket', label:d.name||'(No title)', weekId:null, tab:'reviews' }); }); showSearch(results); };
+function showSearch(items){ const list=document.getElementById('searchResults'); list.innerHTML = items.length? '' : '<div class="muted">No matches.</div>'; items.forEach(it=>{ const row=document.createElement('div'); row.className='result-item'; row.innerHTML = `<div class="muted">${it.type}</div><div style="font-weight:700">${escapeHtml(it.label||'')}</div>`; row.onclick=()=>{ $$('.nav .pill').forEach(p=> p.classList.toggle('active', p.dataset.tab===it.tab)); $$('main .panel').forEach(p=>p.classList.add('hidden')); document.getElementById(it.tab+'Panel').classList.remove('hidden'); if(it.weekId){ state.currentWeekId = it.weekId; renderWeeks(); renderAllMain(); } closeSearch(); }; list.appendChild(row); }); document.getElementById('searchBackdrop').style.display='flex'; }
+window.closeSearch = ()=> document.getElementById('searchBackdrop').style.display='none';
+$('#downloadBtn').onclick = ()=>{ const data = demoGet(); const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'}); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`aiva_hub_backup_${Date.now()}.json`; a.click(); setTimeout(()=> URL.revokeObjectURL(url), 500); };
+document.getElementById('uploadInput').addEventListener('change', async (e)=>{ const file=e.target.files[0]; if(!file) return; try{ const text=await file.text(); const json=JSON.parse(text); localStorage.setItem(DEMO_KEY, JSON.stringify(json)); alert('Upload complete.'); renderWeeks(); renderAllMain(); }catch(err){ alert('Invalid JSON: '+err.message); } });
+const backdrop=document.getElementById('modalBackdrop'); const modal=document.getElementById('genericModal');
+function openModal(html){ modal.innerHTML=html; backdrop.style.display='flex'; }
+function closeModal(){ backdrop.style.display='none'; modal.innerHTML=''; }
+window.closeModal=closeModal;
+
+function renderAgendaTabsLinks(){ renderAgendaTabs(); renderLinksTabs(); }
+function renderAllMain(){ renderAgendaTabsLinks(); renderAgenda(); renderReporting(); renderG2K(); renderLinks(); renderTickets(); }
+renderAllMain();
+</script>
+</body>
+</html>
